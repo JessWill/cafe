@@ -1,0 +1,23 @@
+@layout('layouts/main')
+
+@section('body')
+    <main>
+      <div class="container">
+        <h1 class="title">Hash Submission</h1>
+        <form action="/submit" method="post">
+          <div class="field">
+            <label class="label">Enter a SHA256 Hash</label>
+            <div class="control">
+              <input type="text" name="sha256_hash" class="input" placeholder="Enter SHA256 hash">
+            </div>
+          </div>
+
+          <div class="field">
+            <div class="control">
+              <button type="submit" class="button is-primary" style="background-color: #552306;">Submit</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </main>
+@end
