@@ -8,10 +8,10 @@ export default class extends BaseSchema {
       table.increments('id')
       table.timestamp('created_at', { useTz: true })
       table.timestamp('updated_at', { useTz: true })
-      table.integer('hash_id').unsigned().references('id').inTable('hashes');
-      table.string('ip_address').notNullable();
-      table.float('abuse_reputation').notNullable();
-      table.json('geolocation').notNullable();
+      table.integer('hash_id').notNullable().unsigned().references('hash').inTable('hashes');;
+      table.string('ip');
+      table.float('abuse_reputation');
+      table.json('geolocation');
       table.boolean('vpn');
       table.boolean('proxy');
       table.boolean('tor');
