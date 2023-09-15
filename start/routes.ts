@@ -28,3 +28,7 @@ Route.get('/submission', async ({ view }) => {
   return view.render('submission')
 })
 
+Route.post('/submit', 'IpanalysisController.submit');
+
+Route.get('/ipanalysis/:hash', 'IpanalysisController.ipanalysis').as('ipanalysis');
+

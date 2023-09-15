@@ -1,0 +1,19 @@
+version: '3'
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - HOST=0.0.0.0 
+    ports:
+      - "8080:1337"  
+
+  db:
+    image: postgres:latest 
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: cafedb
+    ports:
+      - "5432:5432" 
