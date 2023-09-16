@@ -4,7 +4,7 @@ import Hash from 'App/Models/Hash';
 import IPAddress from 'App/Models/Ipaddress';
 
 const axios = require('axios');
-
+import Env from '@ioc:Adonis/Core/Env';
 class HomeController {
   async submit({ request, response }) {
     try {
@@ -21,22 +21,22 @@ class HomeController {
       }else{
         //Query Virus Total for IPs contacted by executable
         console.log("%c🔎 Contacting Virus Total ✨\n", "color: #7DF9FF;")
-        const contactedIPs = await this.virusTotal(hashValue, response)
+        const contactedIPs = await this.virusTotal(hashValue)
         console.log("%c😘 Thank you for the data VT 🥰\n\n", "color: #7DF9FF;")
 
         //Query AbuseIPDB for reputational scores
         console.log("%c🔎 Contacting AbuseIPDB ✨\n", "color: #7DF9FF;")
-        const reputationIPs = await this.abuseIPDB(contactedIPs,response)
+        const reputationIPs = await this.abuseIPDB(contactedIPs)
         console.log("%c😘 Thank you for the data AIPDB 🥰\n\n", "color: #7DF9FF;")
         
         //Query ip-api for most current location information on the IP
         console.log("%c🔎 Contacting IP-API ✨\n", "color: #7DF9FF;")
-        const geolocationIPs = await this.ipapi(contactedIPs,response)
+        const geolocationIPs = await this.ipapi(contactedIPs)
         console.log("%c😘 Thank you for the data IPAPI 🥰\n\n", "color: #7DF9FF;")
 
         //Query alienvault for any threat intelligence info (pulses)
         console.log("%c🔎 Contacting Alienvault OTX, please be patient! ✨\n", "color: #7DF9FF;")
-        const pulses = await this.alienVault(contactedIPs,response)
+        const pulses = await this.alienVault(contactedIPs)
         console.log("%c👽 Thank you for the data OTX 👽\n\n", "color: #7DF9FF;")
 
         //update DB
@@ -49,16 +49,31 @@ class HomeController {
         return this.renderIpAnalysis({ view, hashValue })
       }
     } catch (error) {
+      if (error.message === 'VirusTotalAPIError') {
+        return view.render('errors/vt-error');
+      }
+      if (error.message === 'AbuseIPDBError') {
+        return view.render('errors/abipdb-error');
+      }
+      if (error.message === 'IPAPIError') {
+        return view.render('errors/ipapi-error');
+      }
+      if (error.message === 'AlienVaultError') {
+        return view.render('errors/alienvault-error');
+      }
+      if (error.message === 'databaseError') {
+        return view.render('errors/db-error');
+      }
       console.error(error);
-      return response.status(500).send('An error occurred when querying VT API')
+      return response.status(500).send('An unknown error occurred.');
     }
   }
   
-  async virusTotal(hashValue,response){
+  async virusTotal(hashValue){
     try{
       // VT Req
       const apiUrl = `https://www.virustotal.com/api/v3/files/${hashValue}/contacted_ips`;
-      const apiKey = '06a9a852b9d174bf852012a25c6a39ab4ae42d10db8f5ae8e3bd0da665a30a61';
+      const apiKey = Env.get('VT_KEY');
       const headers = {
         'x-apikey': apiKey,
       };
@@ -70,11 +85,11 @@ class HomeController {
 
     }catch (error) {
       console.error(error);
-      return response.status(500).send('Error Querying VirusTotal');
+      throw new Error('VirusTotalAPIError');
     }
   }
 
-  async abuseIPDB(contactedIPs,response){
+  async abuseIPDB(contactedIPs){
     try{
       type ResultType = {
         ipAddress: string;
@@ -84,7 +99,7 @@ class HomeController {
 
       for (const ipAddress of contactedIPs) { 
         const apiUrl = `https://api.abuseipdb.com/api/v2/check?ipAddress=${ipAddress}&maxAgeInDays=365`;
-        const apiKey = 'e22cfdc8587f17a3186b67a07608a7be7e3b298be923bdef29e44ccc7bbba736f4f4a25435ac9445';
+        const apiKey = Env.get('ABUSEIPDB_KEY');
         const headers = {
           'Key': apiKey,
         };
@@ -99,13 +114,13 @@ class HomeController {
       }
       return results;
 
-    } catch (error) {
+    }catch (error) {
       console.error(error);
-      return response.status(500).send('An error occurred when querying AbuseIPDB API');
+      throw new Error('AbuseIPDBError');
     }
   }
 
-  async ipapi(contactedIPs, response){
+  async ipapi(contactedIPs){
     try{
       type ResultType = {
         ipAddress: string;
@@ -126,20 +141,20 @@ class HomeController {
       }
       return results;
 
-    } catch (error) {
+    }catch (error) {
       console.error(error);
-      return response.status(500).send('An error occurred when querying ipapi API');
+      throw new Error('IPAPIError');
     }
   }
 
-  async alienVault(contactedIPs, response){
+  async alienVault(contactedIPs){
     try{
       type ResultType = {
         ipAddress: string;
         pulses: string;
       };
 
-      const apiKey = 'ffc59cc4a0d81576872124ad8e44a9bb9bc556e0bc033c8288bac0424c4b6b71';
+      const apiKey = Env.get('OTX_KEY');
         const headers = {
           'X-OTX-API-KEY': apiKey,
         };
@@ -159,9 +174,9 @@ class HomeController {
       const results: ResultType[] = (await Promise.all(fetchPromises)).filter(Boolean); 
       return results;
 
-    } catch (error) {
+    }catch (error) {
       console.error(error);
-      return response.status(500).send('An error occurred when querying alienvault API');
+      throw new Error('AlienVaultError');
     }
   }
 
@@ -217,9 +232,9 @@ class HomeController {
           });
         }
       }
-    } catch (error) {
+    }catch (error) {
       console.error(error);
-      return response.status(500).send('An error occurred when updating the database');
+      throw new Error('databaseError');
     }
   }
 

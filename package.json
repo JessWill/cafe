@@ -66,6 +66,7 @@
     "@adonisjs/session": "^6.4.0",
     "@adonisjs/shield": "^7.1.1",
     "@adonisjs/view": "^6.2.0",
+    "aws-sdk": "^2.1459.0",
     "axios": "^1.5.0",
     "bulma": "^0.9.4",
     "leaflet": "^1.9.4",
