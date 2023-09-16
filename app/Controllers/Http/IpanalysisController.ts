@@ -57,6 +57,12 @@ class HomeController {
 
   async abuseIPDB(contactedIPs,response){
     try{
+      type ResultType = {
+        ipAddress: string;
+        abuseConfidenceScore: number;
+      };
+      let results: ResultType[] = [];  // Declare the array with the correct type
+
       for (const ipAddress of contactedIPs) { 
         const apiUrl = `https://api.abuseipdb.com/api/v2/check?ipAddress=${ipAddress}&maxAgeInDays=365`;
         const apiKey = 'e22cfdc8587f17a3186b67a07608a7be7e3b298be923bdef29e44ccc7bbba736f4f4a25435ac9445';
@@ -66,12 +72,14 @@ class HomeController {
 
         const { data: jsonData } = await axios.get(apiUrl, { headers });
 
-        //extract reputation score
-        return {
+        results.push({
           ipAddress: jsonData.data.ipAddress,
           abuseConfidenceScore: jsonData.data.abuseConfidenceScore
-        }; 
+        }); 
+
       }
+      return results;
+
     } catch (error) {
       console.error(error);
       return response.status(500).send('An error occurred when querying AbuseIPDB API');

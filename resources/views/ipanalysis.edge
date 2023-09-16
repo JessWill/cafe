@@ -10,6 +10,7 @@
             <ul>
                 @each(ip in contactedIPs)
                     <li>{{ ip.ip }}</li>
+                    <li>{{ ip.abuse_reputation }}</li>
                 @endeach
             </ul>
         </div>

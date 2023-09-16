@@ -9,7 +9,7 @@ export default class extends BaseSchema {
       table.timestamp('created_at', { useTz: true })
       table.timestamp('updated_at', { useTz: true })
       table.integer('hash_id').notNullable().unsigned().references('id').inTable('hashes');;
-      table.string('ip');
+      table.string('ip').unique();
       table.float('abuse_reputation');
       table.json('geolocation');
       table.boolean('vpn');
