@@ -12,11 +12,9 @@ export default class extends BaseSchema {
       table.string('ip').unique();
       table.float('abuse_reputation');
       table.json('geolocation');
-      table.boolean('vpn');
-      table.boolean('proxy');
-      table.boolean('tor');
-      table.boolean('relay');
-      table.boolean('hosting');
+      table.string('colour')
+      table.json('pulses');
+
     })
   }
 

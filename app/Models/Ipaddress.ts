@@ -34,19 +34,10 @@ export default class IPAddress extends BaseModel {
   public geolocation: Record<string, any>;
 
   @column()
-  public vpn: boolean;
+  public colour: string;
 
   @column()
-  public proxy: boolean;
-
-  @column()
-  public tor: boolean;
-
-  @column()
-  public relay: boolean;
-
-  @column()
-  public hosting: boolean;
+  public pulses: Record<string, any>;
 
   @manyToMany(() => Hash, {
     pivotTable: 'hash_ipaddress', 

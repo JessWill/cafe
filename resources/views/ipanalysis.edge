@@ -7,12 +7,42 @@
         <div class="result-container">
             <h3 class="subtitle"> {{ hash.hash }}</h3>
             <h2 class="subtitle">Contacted IPs:</h2>
-            <ul>
-                @each(ip in contactedIPs)
-                    <li>{{ ip.ip }}</li>
-                    <li>{{ ip.abuse_reputation }}</li>
-                @endeach
-            </ul>
+            <div id="map" style="width: 80vw; height: 80vh;"></div>
+
+            <script>
+                const ipsData = [
+                    @each(ip in contactedIPs)
+                    {
+                        ip: "{{ ip.ip }}",
+                        reputation: "{{ ip.abuse_reputation }}",
+                        lat: {{ ip.geolocation.lat }},
+                        lon: {{ ip.geolocation.lon }},
+                        colour: "{{ ip.colour}}"  
+                    },
+                    @endeach
+                ];
+            </script>
+            <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+            <script>
+                var map = L.map('map').setView([51.505, -0.09], 13);
+                
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '© OpenStreetMap contributors'
+                }).addTo(map);
+
+                ipsData.forEach(function(ip) {
+                    //color not colour because america 
+                    const color = ip.colour;
+
+                    L.circleMarker([ip.lat, ip.lon], {
+                        color: color,
+                        fillColor: color,
+                        fillOpacity: 0.5,
+                        radius: 8
+                    }).addTo(map)
+                    .bindPopup('IP: ' + ip.ip + '<br>Reputation: ' + ip.reputation);  // Fixed the semicolon placement
+                });
+            </script>
         </div>
     </div>
 </main>
