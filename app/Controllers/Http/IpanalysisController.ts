@@ -10,35 +10,44 @@ class HomeController {
     try {
       const hashValue = request.input('hash');
       
-      //Query Virus Total for IPs contacted by executable
-      console.log("%c🔎 Contacting Virus Total ✨\n", "color: #7DF9FF;")
-      const contactedIPs = await this.virusTotal(hashValue, response)
-      console.log("%c😘 Thank you for the data VT 🥰\n\n", "color: #7DF9FF;")
+      const existingHash = await Hash.query()
+      .where('hash', hashValue)
+      .first()
 
-      //Query AbuseIPDB for reputational scores
-      console.log("%c🔎 Contacting AbuseIPDB ✨\n", "color: #7DF9FF;")
-      const reputationIPs = await this.abuseIPDB(contactedIPs,response)
-      console.log("%c😘 Thank you for the data AIPDB 🥰\n\n", "color: #7DF9FF;")
-      
-      //Query ip-api for most current location information on the IP
-      console.log("%c🔎 Contacting IP-API ✨\n", "color: #7DF9FF;")
-      const geolocationIPs = await this.ipapi(contactedIPs,response)
-      console.log("%c😘 Thank you for the data IPAPI 🥰\n\n", "color: #7DF9FF;")
+      if (existingHash){
+        // Render the 'ipanalysis' view with the hash and JSON data
+        console.log("%c🥳 Your hash is already here! 🥳", "color: #FF69B4;")
+        return this.renderIpAnalysis({ view, hashValue })
+      }else{
+        //Query Virus Total for IPs contacted by executable
+        console.log("%c🔎 Contacting Virus Total ✨\n", "color: #7DF9FF;")
+        const contactedIPs = await this.virusTotal(hashValue, response)
+        console.log("%c😘 Thank you for the data VT 🥰\n\n", "color: #7DF9FF;")
 
-      //Query alienvault for any threat intelligence info (pulses)
-      console.log("%c🔎 Contacting Alienvault OTX, please be patient! ✨\n", "color: #7DF9FF;")
-      const pulses = await this.alienVault(contactedIPs,response)
-      console.log("%c👽 Thank you for the data OTX 👽\n\n", "color: #7DF9FF;")
+        //Query AbuseIPDB for reputational scores
+        console.log("%c🔎 Contacting AbuseIPDB ✨\n", "color: #7DF9FF;")
+        const reputationIPs = await this.abuseIPDB(contactedIPs,response)
+        console.log("%c😘 Thank you for the data AIPDB 🥰\n\n", "color: #7DF9FF;")
+        
+        //Query ip-api for most current location information on the IP
+        console.log("%c🔎 Contacting IP-API ✨\n", "color: #7DF9FF;")
+        const geolocationIPs = await this.ipapi(contactedIPs,response)
+        console.log("%c😘 Thank you for the data IPAPI 🥰\n\n", "color: #7DF9FF;")
 
-      //update DB
-      console.log("%c😵‍💫 Updating the Mainframe 😵‍💫\n", "color: #00FF00;")
-      await this.updateDatabase(contactedIPs, hashValue, reputationIPs, geolocationIPs, pulses, response)
-      console.log("%c💚 Mainframe Updated 💚\n\n", "color: #00FF00;")
+        //Query alienvault for any threat intelligence info (pulses)
+        console.log("%c🔎 Contacting Alienvault OTX, please be patient! ✨\n", "color: #7DF9FF;")
+        const pulses = await this.alienVault(contactedIPs,response)
+        console.log("%c👽 Thank you for the data OTX 👽\n\n", "color: #7DF9FF;")
 
-      // Render the 'ipanalysis' view with the hash and JSON data
-      console.log("%c☕👾 Thanks for visiting the Malware Cafe 👾☕", "color: #FF69B4;")
-      return this.renderIpAnalysis({ view, hashValue })
+        //update DB
+        console.log("%c😵‍💫 Updating the Mainframe 😵‍💫\n", "color: #00FF00;")
+        await this.updateDatabase(contactedIPs, hashValue, reputationIPs, geolocationIPs, pulses, response)
+        console.log("%c💚 Mainframe Updated 💚\n\n", "color: #00FF00;")
 
+        // Render the 'ipanalysis' view with the hash and JSON data
+        console.log("%c☕👾 Thanks for visiting the Malware Cafe 👾☕", "color: #FF69B4;")
+        return this.renderIpAnalysis({ view, hashValue })
+      }
     } catch (error) {
       console.error(error);
       return response.status(500).send('An error occurred when querying VT API')
@@ -164,7 +173,6 @@ class HomeController {
 
   async updateDatabase(contactedIPs, hashValue, reputationIPs, geolocationIPs, pulses, response) {
     try {
-      console.log(pulses)
       // Put hash in the database
       const hash = await Hash.firstOrCreate({ hash: hashValue });
 
@@ -176,6 +184,11 @@ class HomeController {
       const geolocationMap = new Map();
       for (const geo of geolocationIPs) {
         geolocationMap.set(geo.ipAddress, { lat: geo.lat, lon: geo.lon });
+      }
+
+      const pulsesMap = new Map();
+      for (const pulseRecord of pulses) {
+          pulsesMap.set(pulseRecord.ipAddress, JSON.stringify(pulseRecord.pulses));
       }
 
       // Update IPs in the database
@@ -199,7 +212,8 @@ class HomeController {
               lat: geolocation.lat,
               lon: geolocation.lon
             },
-            colour: colour
+            colour: colour,
+            pulses: pulsesMap.get(ipAddress) || "[]"
           });
         }
       }

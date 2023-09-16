@@ -17,7 +17,8 @@
                         reputation: "{{ ip.abuse_reputation }}",
                         lat: {{ ip.geolocation.lat }},
                         lon: {{ ip.geolocation.lon }},
-                        colour: "{{ ip.colour}}"  
+                        colour: "{{ ip.colour}}",
+                        pulses: "{{ ip.pulses }}"
                     },
                     @endeach
                 ];
@@ -40,7 +41,7 @@
                         fillOpacity: 0.5,
                         radius: 8
                     }).addTo(map)
-                    .bindPopup('IP: ' + ip.ip + '<br>Reputation: ' + ip.reputation);  // Fixed the semicolon placement
+                    .bindPopup('IP: ' + ip.ip + '<br>Reputation: ' + ip.reputation + '<br>Pulses:' + ip.pulses);  // Fixed the semicolon placement
                 });
             </script>
         </div>
