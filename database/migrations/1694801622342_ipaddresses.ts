@@ -8,7 +8,7 @@ export default class extends BaseSchema {
       table.increments('id')
       table.timestamp('created_at', { useTz: true })
       table.timestamp('updated_at', { useTz: true })
-      table.integer('hash_id').notNullable().unsigned().references('hash').inTable('hashes');;
+      table.integer('hash_id').notNullable().unsigned().references('id').inTable('hashes');;
       table.string('ip');
       table.float('abuse_reputation');
       table.json('geolocation');

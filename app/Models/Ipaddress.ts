@@ -4,27 +4,31 @@ import {
   manyToMany,
   ManyToMany,
 } from '@ioc:Adonis/Lucid/Orm'
-import Hash from 'App/Models/Hash';
+ import Hash from 'App/Models/Hash';
 import { DateTime } from 'luxon'
 
 export default class IPAddress extends BaseModel {
+  static get table() {
+    return 'ipaddresses'
+  }
+  
   @column({ isPrimary: true })
   public id: number;
 
   @column.dateTime({ autoCreate: true })
-  public createdAt: DateTime;
+  public created_at: DateTime;
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
-  public updatedAt: DateTime;
+  public updated_at: DateTime;
 
   @column({ columnName: 'hash_id' })
-  public hashId: number;
+  public hash_id: number;
 
   @column()
-  public ipAddress: string;
+  public ip: string;
 
   @column()
-  public abuseReputation: number;
+  public abuse_reputation: number;
 
   @column()
   public geolocation: Record<string, any>;

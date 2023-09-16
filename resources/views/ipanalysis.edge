@@ -5,9 +5,13 @@
 <main>
     <div class="container">
         <div class="result-container">
-            <h3 class="subtitle"> {{ hash }}</h3>
+            <h3 class="subtitle"> {{ hash.hash }}</h3>
             <h2 class="subtitle">Contacted IPs:</h2>
-        <pre>{{ JSON.stringify(contactedIPs, null, 2) }}</pre>
+            <ul>
+                @each(ip in contactedIPs)
+                    <li>{{ ip.ip }}</li>
+                @endeach
+            </ul>
         </div>
     </div>
 </main>

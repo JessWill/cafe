@@ -1,23 +1,30 @@
 import { BaseModel, column, manyToMany, ManyToMany } from "@ioc:Adonis/Lucid/Orm";
 import IPAddress from "App/Models/Ipaddress"; 
+import { DateTime } from 'luxon'
 
 export default class Hash extends BaseModel {
   @column({ isPrimary: true })
   public id: number;
 
   @column()
-  public hash_value: string;
+  public hash: string;
+
+  @column.dateTime({ autoCreate: true })
+  public created_at: DateTime;
+
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  public updated_at: DateTime;
 
   static table = 'hashes';
   static primaryKey = 'id';
 
-  static fillable = ['hash_value'];
+  static fillable = ['hash'];
 
   // relationships
-  @manyToMany(() => IPAddress, {
-    pivotTable: "hash_ipaddress", // Specify the pivot table name
-    pivotForeignKey: "hash_id", // Specify the foreign key in the pivot table for Hash
-    pivotRelatedForeignKey: "ipaddress_id", // Specify the foreign key in the pivot table for IPAddress
+   @manyToMany(() => IPAddress, {
+    pivotTable: "hash_ipaddress", 
+    pivotForeignKey: "id", 
+    pivotRelatedForeignKey: "id", 
   })
   public ipAddresses: ManyToMany<typeof IPAddress>;
 }
