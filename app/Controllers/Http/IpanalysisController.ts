@@ -41,7 +41,7 @@ class HomeController {
 
         //update DB
         console.log("%c😵‍💫 Updating the Mainframe 😵‍💫\n", "color: #00FF00;")
-        await this.updateDatabase(contactedIPs, hashValue, reputationIPs, geolocationIPs, pulses, response)
+        await this.updateDatabase(contactedIPs, hashValue, reputationIPs, geolocationIPs, pulses)
         console.log("%c💚 Mainframe Updated 💚\n\n", "color: #00FF00;")
 
         // Render the 'ipanalysis' view with the hash and JSON data
@@ -186,7 +186,7 @@ class HomeController {
     return 'green'; 
   }
 
-  async updateDatabase(contactedIPs, hashValue, reputationIPs, geolocationIPs, pulses, response) {
+  async updateDatabase(contactedIPs, hashValue, reputationIPs, geolocationIPs, pulses) {
     try {
       // Put hash in the database
       const hash = await Hash.firstOrCreate({ hash: hashValue });

@@ -1,18 +1,28 @@
-FROM node:18
+# This file was retrieved from:
+# https://docs.adonisjs.com/cookbooks/dockerizing-adonis#all-stages-combined
 
-WORKDIR /cafe
+ARG NODE_IMAGE=node:16.13.1-alpine
 
-# Copy pkg files 
-COPY package*.json ./
+FROM $NODE_IMAGE AS base
+RUN apk --no-cache add dumb-init
+RUN mkdir -p /home/node/app && chown node:node /home/node/app
+WORKDIR /home/node/app
+USER node
+RUN mkdir tmp
 
-# Install dependencies
-RUN npm install
+FROM base AS dependencies
+COPY --chown=node:node ./package*.json ./
+RUN npm ci
+COPY --chown=node:node . .
 
-# Copy the rest of the code
-COPY . .
+FROM dependencies AS build
+RUN node ace build --production
 
-# Expose port
+FROM base AS production
+ENV NODE_ENV=production
+ENV HOST=0.0.0.0
+COPY --chown=node:node ./package*.json ./
+RUN npm ci --production
+COPY --chown=node:node --from=build /home/node/app/build .
 EXPOSE 1337
-
-# Run!
-CMD ["node", "ace", "serve", "--watch"]
+CMD [ "dumb-init", "node", "server.js" ]
