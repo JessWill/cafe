@@ -1,16 +1,7 @@
 version: '3'
 services:
-  # app:
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile
-  #   environment:
-  #     - HOST=0.0.0.0 
-  #   ports:
-  #     - "8080:1337"  
-  app_production:
-    image: cafe
-    # command: sh -c "node ace migration:fresh && dumb-init node server.js"
+  app:
+    image: 0xcaafe/cafe
     environment:
     - PORT=${PORT}
     - HOST=${HOST}
