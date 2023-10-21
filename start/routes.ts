@@ -28,7 +28,13 @@ Route.get('/submission', async ({ view }) => {
   return view.render('submission')
 })
 
+Route.get('/search', async ({ view }) => {
+  return view.render('search');
+});
+
+
 Route.post('/submit', 'IpanalysisController.submit');
+Route.post('/search', 'SearchesController.handleSearch');
 
 Route.get('/ipanalysis/:hash', 'IpanalysisController.ipanalysis').as('ipanalysis');
 

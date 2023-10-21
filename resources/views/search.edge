@@ -1,0 +1,47 @@
+@layout('layouts/main')
+
+@section('body')
+    <div class="container is-fluid">
+      <h1 class="title">Search</h1>
+      {{-- Start of the search form --}}
+      <form action="/search" method="post">
+        <div class="field">
+          <label class="label">Keyword Search Across Pulses</label>
+          <div class="control">
+            <input type="text" name="keyword" class="input" placeholder="Enter Keyword" required> 
+          </div>
+        </div>
+        <div class="field">
+          <div class="control">
+            <button type="submit" class="button is-primary" style="background-color: #552306;">Submit</button>
+          </div>
+        </div>
+      </form>
+
+      <div class="my-6"></div>
+
+      @if(searchResults && searchResults.length)
+        <h2 class="title is-3">Search Results:</h2>
+        <div style="max-height: 70vh; overflow-y: auto;"> 
+          <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
+            <thead>
+              <tr>
+                <th>IP</th>
+                <th>Pulses</th>
+              </tr>
+            </thead>
+            <tbody>
+              @each(result in searchResults)
+                <tr>
+                  <td>{{ result.ip }}</td>
+                  <td>{{ result.pulses.join(', ') }}</td>
+                </tr>
+              @endeach
+            </tbody>
+          </table>
+        </div>
+      @else
+        <p>No results found.</p>
+      @endif
+    </div>
+@endsection
