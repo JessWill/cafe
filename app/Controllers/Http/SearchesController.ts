@@ -15,7 +15,6 @@ export default class SearchController {
     .select('ip', 'pulses');
 
     // Render the same view with results
-    console.log(searchResults)
     return view.render('search', { searchResults });
   }
 }

@@ -2,23 +2,27 @@
 @set('CAFE', 'Home')
 
 @section('body')
-    <main>
+  <section class="hero is-fullheight">
+    <div class="hero-body">
       <div class="container">
-        <h1 class="title">Hash Submission</h1>
-        <form action="/submit" method="post">
-          <div class="field">
-            <label class="label">Submit Your Hash</label>
-            <div class="control">
-              <input type="text" name="hash" class="input" placeholder="Enter hash">
+        <div class="columns is-centered">
+          <div class="column is-four-quarters">
+            <h1 class="title has-text-centered">Hash Submission</h1>
+            <div class="box">
+              <form action="/submit" method="post">
+                <div class="field is-grouped is-grouped-centered is-grouped-expanded">
+                  <p class="control is-expanded">
+                    <input class="input" type="text" name="hash" placeholder="Enter Hash" style="min-width: 70%;">
+                  </p>
+                  <p class="control">
+                    <button type="submit" class="button is-primary" style="background-color: #552306;">Submit</button>
+                  </p>
+                </div>
+              </form>
             </div>
           </div>
-
-          <div class="field">
-            <div class="control">
-              <button type="submit" class="button is-primary" style="background-color: #552306;">Submit</button>
-            </div>
-          </div>
-        </form>
+        </div>
       </div>
-    </main>
+    </div>
+  </section>
 @end
