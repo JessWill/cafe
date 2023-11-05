@@ -24,5 +24,6 @@ ENV HOST=0.0.0.0
 COPY --chown=node:node ./package*.json ./
 RUN npm ci --production
 COPY --chown=node:node --from=build /home/node/app/build .
+COPY ./global-bundle.pem /home/node/app/global-bundle.pem
 EXPOSE 1337
 CMD [ "dumb-init", "node", "server.js" ]
