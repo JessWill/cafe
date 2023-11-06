@@ -1,0 +1,37 @@
+
+
+
+
+config:
+  # This is a test server run by team Artillery
+  # It's designed to be highly scalable
+  target: http://n10194363-xcafe-1-1494309868.ap-southeast-2.elb.amazonaws.com
+  phases:
+    - duration: 1200
+      arrivalRate: 15
+      rampTo: 200
+      name: Scale Up
+    - duration: 1200
+      arrivalRate: 200
+      rampTo: 1
+      name: Scale Down
+  # Load & configure a couple of useful plugins
+  # https://docs.art/reference/extensions
+  plugins:
+    ensure: {}
+    apdex: {}
+    metrics-by-endpoint: {}
+  apdex:
+    threshold: 100
+  ensure:
+      thresholds:
+        - http.response_time.p99: 100
+        - http.response_time.p95: 75
+scenarios:
+  - flow:
+      - loop:
+        - post:
+            url: "/search"
+            json:
+              keyword: "botnet"
+        count: 1

@@ -6,8 +6,6 @@ export default class SearchController {
   public async handleSearch({ request, view }: HttpContextContract) {
     const keyword = request.input('keyword');
 
-    // Perform the search operation, e.g., query your database
-    // This is a simplified example; your actual search logic may differ
     const searchResults = await IPAddress
     .query()
     .from('ipaddresses')
