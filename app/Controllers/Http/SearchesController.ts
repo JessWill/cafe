@@ -12,7 +12,6 @@ export default class SearchController {
     .whereRaw("CAST(pulses AS TEXT) ILIKE '%' || ? || '%'", [keyword])
     .select('ip', 'pulses');
 
-    // Render the same view with results
     return view.render('search', { searchResults });
   }
 }
